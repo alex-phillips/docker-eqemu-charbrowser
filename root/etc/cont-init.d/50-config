@@ -1,0 +1,24 @@
+#!/usr/bin/with-contenv bash
+
+# set default values for variables
+declare -A CHARBROWSER_CONF
+CHARBROWSER_CONF[DB_HOST]=${DB_HOST:-mariadb}
+CHARBROWSER_CONF[DB_DATABASE]=${DB_DATABASE:-peq}
+CHARBROWSER_CONF[DB_USER]=${DB_USER:-root}
+CHARBROWSER_CONF[DB_PASS]=${DB_PASS:-}
+
+if [ ! -f "/config/config.php" ]; then
+	mv /app/charbrowser/include/config.template /config/config.php
+
+	sed -i 's|cb_db     =   "peq"|cb_db     =   "'${CHARBROWSER_CONF[DB_DATABASE]}'"|g' /config/config.php
+	sed -i 's|cb_host   =   "localhost"|cb_host   =   "'${CHARBROWSER_CONF[DB_HOST]}'"|g' /config/config.php
+	sed -i 's|cb_user   =   ""|cb_user   =   "'${CHARBROWSER_CONF[DB_USER]}'"|g' /config/config.php
+	sed -i 's|cb_pass   =   ""|cb_pass   =   "'${CHARBROWSER_CONF[DB_PASS]}'"|g' /config/config.php
+fi
+
+ln -sf /config/config.php /app/charbrowser/include/
+
+# permissions
+chown -R abc:abc \
+	/app \
+	/config
